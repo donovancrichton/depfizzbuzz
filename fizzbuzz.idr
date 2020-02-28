@@ -1,9 +1,4 @@
 
--- A constructive proof that a number is fizzy (divisible by 3)
-data Fizzy : (n : Nat) -> Type where
-  ZeroFizz : Fizzy Z
-  Fizz : Fizzy n -> Fizzy (3 + n)
-
 -- forall x, forall y. 1 + (x + y) = x + (1 + y)
 total
 plusSuccRightSucc : (x, y : Nat) -> S (x + y) = x + (S y)
@@ -16,6 +11,11 @@ plusSuccRightSucc (S k) y = rewrite rec in Refl
 total
 iterate : (f : a -> a) -> a -> Stream a
 iterate f x = x :: iterate f (f x)
+
+-- A constructive proof that a number is fizzy (divisible by 3)
+data Fizzy : (n : Nat) -> Type where
+  ZeroFizz : Fizzy Z
+  Fizz : Fizzy n -> Fizzy (3 + n)
 
 -- forall 'Fizzy n' there exists a natural number 'k' such that n = 3k.
 total
@@ -144,8 +144,11 @@ fizzBuzz n with (decFizzy n, decBuzzy n)
   fizzBuzz n | (No cant, No contra) = show n
 
 nats : Stream Nat
-nats = iterate S Z
+nats = iterate S (S Z)
 
-go : String
-go = show (take 20 (map fizzBuzz nats))
+main : IO ()
+main = do
+  let xs = map fizzBuzz nats
+  xs <- sequence $ map putStrLn (take 100 xs)
+  pure ()
 
